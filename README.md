@@ -43,7 +43,7 @@ The original article compared URLPattern (unoptimized) against find-my-way, but 
 
 find-my-way has **negligible routing overhead** - within 3% of doing nothing at all.
 
-This demonstrates that a well-designed radix trie router can have routing overhead that's effectively zero.
+This demonstrates that a well-designed radix trie router can have routing overhead that's effectively zero (at least in the context of other overhead of a Node.js HTTP server).
 
 ### URL Constructor (38K req/sec)
 
