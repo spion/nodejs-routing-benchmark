@@ -52,14 +52,14 @@ regarding just how much overhead even a simple action such as URL parsing can ad
 
 **URL constructor** performance is excellent, but still has significant impact:
 
-- 37,727 req/sec - 14% slower than optimal
+- 37,727 req/sec - 14% slower than baseline
 
 ### Custom regex routing (27-29K req/sec)
 
 **Custom regex routing and path-to-regexp** remain viable for many applications:
 
-- **Regex routing**: 28,887 req/sec - 34% slower than optimal
-- **path-to-regexp**: 26,615 req/sec - 39% slower than optimal
+- **Regex routing**: 28,887 req/sec - 34% slower than baseline
+- **path-to-regexp**: 26,615 req/sec - 39% slower than baseline
 
 
 **Key insight**: Both custom regex and path-to-regexp are viable approaches for applications with <200 routes. The performance is acceptable (27-29K req/sec), especially in light of how much simple operations (like URL parsing) can impact throughput.
@@ -68,7 +68,7 @@ regarding just how much overhead even a simple action such as URL parsing can ad
 
 **URLPattern** is indeed fundamentally unsuitable for production:
 
-- **2,991 req/sec** - 93% throughput loss vs optimal
+- **2,991 req/sec** - 93% throughput loss vs baseline
 - **14.3x slower** than find-my-way
 - **14.7x slower** than minimal baseline
 - **36.72ms avg latency** - 19x worse than find-my-way
