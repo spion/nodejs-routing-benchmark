@@ -11,6 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "find-my-way": "^9.1.0"
+    "find-my-way": "^9.1.0",
+    "path-to-regexp": "^8.3.0"
   }
 }

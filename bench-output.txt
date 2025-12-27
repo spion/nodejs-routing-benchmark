@@ -1,0 +1,104 @@
+
+> nodejs-routing-benchmark@1.0.0 bench
+> node run-server-benchmark-wrk.js
+
+================================================================================
+HTTP Server Routing Benchmark - wrk Performance Test
+================================================================================
+Routes: 106
+wrk config: -c 80 -t 4 -d 10s
+(80 connections, 4 threads, 10 second duration)
+================================================================================
+
+Benchmarking: Minimal (no URL parsing)...
+  Warming up...
+✓ Minimal (no URL parsing)
+  Req/sec: 43,923.28
+  Latency: 1.97ms (avg), 107.71ms (max)
+  Total: 439,321 requests
+
+Benchmarking: URL constructor parsing...
+  Warming up...
+✓ URL constructor parsing
+  Req/sec: 37,726.79
+  Latency: 2.23ms (avg), 101.17ms (max)
+  Total: 377,399 requests
+
+Benchmarking: URLPattern (optimized)...
+  Warming up...
+✓ URLPattern (optimized)
+  Req/sec: 2,991.33
+  Latency: 36.72ms (avg), 1060.00ms (max)
+  Total: 29,929 requests
+
+Benchmarking: Regex routing...
+  Warming up...
+✓ Regex routing
+  Req/sec: 28,886.53
+  Latency: 2.94ms (avg), 126.78ms (max)
+  Total: 288,940 requests
+
+Benchmarking: path-to-regexp...
+  Warming up...
+✓ path-to-regexp
+  Req/sec: 26,614.51
+  Latency: 3.18ms (avg), 133.50ms (max)
+  Total: 266,235 requests
+
+Benchmarking: find-my-way...
+  Warming up...
+✓ find-my-way
+  Req/sec: 42,764.02
+  Latency: 1.93ms (avg), 85.54ms (max)
+  Total: 431,898 requests
+
+================================================================================
+SUMMARY
+================================================================================
+Ranking by Request/Second (fastest to slowest):
+
+1. Minimal (no URL parsing)
+   43,923 req/sec
+   1.97ms avg latency (107.71ms max)
+   439,321 total requests in 10s
+
+2. find-my-way
+   42,764 req/sec
+   1.93ms avg latency (85.54ms max)
+   431,898 total requests in 10s
+   1.03x slower than fastest
+   -1,159 req/sec vs fastest
+   +-0.04ms routing overhead
+
+3. URL constructor parsing
+   37,727 req/sec
+   2.23ms avg latency (101.17ms max)
+   377,399 total requests in 10s
+   1.16x slower than fastest
+   -6,196 req/sec vs fastest
+   +0.26ms routing overhead
+
+4. Regex routing
+   28,887 req/sec
+   2.94ms avg latency (126.78ms max)
+   288,940 total requests in 10s
+   1.52x slower than fastest
+   -15,037 req/sec vs fastest
+   +0.97ms routing overhead
+
+5. path-to-regexp
+   26,615 req/sec
+   3.18ms avg latency (133.50ms max)
+   266,235 total requests in 10s
+   1.65x slower than fastest
+   -17,309 req/sec vs fastest
+   +1.21ms routing overhead
+
+6. URLPattern (optimized)
+   2,991 req/sec
+   36.72ms avg latency (1060.00ms max)
+   29,929 total requests in 10s
+   14.68x slower than fastest
+   -40,932 req/sec vs fastest
+   +34.75ms routing overhead
+

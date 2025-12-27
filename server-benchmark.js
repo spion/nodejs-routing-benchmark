@@ -12,11 +12,6 @@ function generateRoutes() {
   const resources = ['users', 'posts', 'comments', 'products', 'orders', 'invoices', 'payments', 'reviews', 'notifications', 'messages'];
   const actions = ['list', 'create', 'update', 'delete', 'search', 'export', 'import', 'validate'];
 
-  routes.push({ pattern: '/health', handler: 'health' });
-  routes.push({ pattern: '/metrics', handler: 'metrics' });
-  routes.push({ pattern: '/api/status', handler: 'status' });
-  routes.push({ pattern: '/api/version', handler: 'version' });
-
   for (let i = 0; i < resources.length; i++) {
     const resource = resources[i];
     routes.push({ pattern: `/api/${resource}`, handler: `list_${resource}` });
@@ -41,6 +36,13 @@ function generateRoutes() {
     routes.push({ pattern: `/static/files/file${fileCounter}.txt`, handler: `serve_file_${fileCounter}` });
     fileCounter++;
   }
+
+  // Make sure health is near the end
+  routes.push({ pattern: '/health', handler: 'health' });
+  routes.push({ pattern: '/metrics', handler: 'metrics' });
+  routes.push({ pattern: '/api/status', handler: 'status' });
+  routes.push({ pattern: '/api/version', handler: 'version' });
+
 
   return routes;
 }
@@ -74,20 +76,6 @@ function createBaselineServer() {
   });
 }
 
-/**
- * 1b. Baseline - Manual URL parsing (string operations only)
- */
-function createManualParseServer() {
-  return http.createServer((req, res) => {
-    // Manual URL parsing - just extract pathname
-    const url = req.url;
-    const queryIndex = url.indexOf('?');
-    const pathname = queryIndex === -1 ? url : url.substring(0, queryIndex);
-
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(responseData));
-  });
-}
 
 /**
  * 2. URLPattern (Optimized)
@@ -154,7 +142,42 @@ function createRegexServer() {
 }
 
 /**
- * 4. find-my-way
+ * 4. path-to-regexp
+ */
+function createPathToRegexpServer() {
+  let pathToRegexp;
+  try {
+    pathToRegexp = require('path-to-regexp');
+  } catch (e) {
+    return null;
+  }
+
+  const baseURL = 'http://localhost';
+  const compiledRoutes = routes.map(route => ({
+    match: pathToRegexp.match(route.pattern, { decode: decodeURIComponent }),
+    handler: route.handler
+  }));
+
+  return http.createServer((req, res) => {
+    const url = new URL(req.url, baseURL);
+    const pathname = url.pathname;
+
+    let handler = null;
+    for (const route of compiledRoutes) {
+      const result = route.match(pathname);
+      if (result) {
+        handler = route.handler;
+        break;
+      }
+    }
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(responseData));
+  });
+}
+
+/**
+ * 5. find-my-way
  */
 function createFindMyWayServer() {
   let FindMyWay;
@@ -182,9 +205,9 @@ function createFindMyWayServer() {
 module.exports = {
   createMinimalServer,
   createBaselineServer,
-  createManualParseServer,
   createURLPatternServer,
   createRegexServer,
+  createPathToRegexpServer,
   createFindMyWayServer,
   routesCount: routes.length,
 };
@@ -212,10 +235,17 @@ if (require.main === module) {
     console.log(`3. Regex routing:             http://localhost:${PORT_BASE + 2}/health`);
   });
 
+  const pathToRegexpServer = createPathToRegexpServer();
+  if (pathToRegexpServer) {
+    pathToRegexpServer.listen(PORT_BASE + 3, () => {
+      console.log(`4. path-to-regexp:            http://localhost:${PORT_BASE + 3}/health`);
+    });
+  }
+
   const findMyWayServer = createFindMyWayServer();
   if (findMyWayServer) {
-    findMyWayServer.listen(PORT_BASE + 3, () => {
-      console.log(`4. find-my-way:               http://localhost:${PORT_BASE + 3}/health`);
+    findMyWayServer.listen(PORT_BASE + 4, () => {
+      console.log(`5. find-my-way:               http://localhost:${PORT_BASE + 4}/health`);
     });
   }
 }

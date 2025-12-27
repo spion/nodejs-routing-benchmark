@@ -9,6 +9,7 @@ const {
   createBaselineServer,
   createURLPatternServer,
   createRegexServer,
+  createPathToRegexpServer,
   createFindMyWayServer,
   routesCount,
 } = require('./server-benchmark');
@@ -224,8 +225,21 @@ async function runBenchmarks() {
   }
   console.log('');
 
-  // 5. find-my-way
-  const findMyWay = await benchmarkServer('find-my-way', createFindMyWayServer, 3005);
+  // 5. path-to-regexp
+  const pathToRegexp = await benchmarkServer('path-to-regexp', createPathToRegexpServer, 3005);
+  results.push(pathToRegexp);
+  console.log(`✓ ${pathToRegexp.name}`);
+  if (!pathToRegexp.error) {
+    console.log(`  Req/sec: ${pathToRegexp.reqPerSec.toLocaleString()}`);
+    console.log(`  Latency: ${pathToRegexp.latencyAvg.toFixed(2)}ms (avg), ${pathToRegexp.latencyMax.toFixed(2)}ms (max)`);
+    console.log(`  Total: ${pathToRegexp.totalRequests.toLocaleString()} requests`);
+  } else {
+    console.log(`  ${pathToRegexp.error}`);
+  }
+  console.log('');
+
+  // 6. find-my-way
+  const findMyWay = await benchmarkServer('find-my-way', createFindMyWayServer, 3006);
   results.push(findMyWay);
   console.log(`✓ ${findMyWay.name}`);
   if (!findMyWay.error) {
